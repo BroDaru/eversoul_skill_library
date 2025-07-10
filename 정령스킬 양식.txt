@@ -1,0 +1,55 @@
+,
+    {
+        "character": "정령",
+        "skills": [
+            {
+                "skillName": "",
+                "skillType": "얼티밋",
+                "description": "얼티밋스킬설명",
+                "tags": ["태그1", "태그2"]
+            },
+            {
+                "skillName": "",
+                "skillType": "메인",
+                "description": "메인스킬설명",
+                "tags": ["태그1", "태그2"]
+            },
+            {
+                "skillName": "",
+                "skillType": "서브1",
+                "description": "서브1스킬설명",
+                "tags": ["태그1", "태그2"]
+            },
+            {
+                "skillName": "",
+                "skillType": "서브2",
+                "description": "서브2스킬설명",
+                "tags": ["태그1", "태그2"]
+            },
+            {
+                "skillName": "",
+                "skillType": "패시브",
+                "description": "패시브스킬설명",
+                "tags": ["태그1", "태그2"]
+            },
+            {
+                "skillName": "",
+                "skillType": "유물",
+                "defaultRarity": "에픽",
+                "levels": {
+                    "에픽": {
+                        "description": "유물스킬 에픽 설명",
+                        "tags": ["태그1", "태그2"]
+                    },
+                    "레전+": {
+                        "description": "유물스킬 레전+ 설명",
+                        "tags": ["태그1", "태그2"]
+                    },
+                    "오리진": {
+                        "description": "유물스킬 오리진 설명",
+                        "tags": ["태그1", "태그2"]
+                    }
+                }
+            }
+        ]
+    }

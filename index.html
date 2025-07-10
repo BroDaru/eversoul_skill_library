@@ -1,0 +1,27 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>에버소울 스킬 도서관</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <h1>⚔️ 에버소울 스킬 도서관</h1>
+
+    <div class="search-filter-box">
+        <input type="text" id="searchInput" placeholder="태그 또는 스킬 이름으로 검색...">
+        <label for="rarityFilter">유물등급:</label>
+        <select id="rarityFilter">
+            <option value="에픽">에픽</option>
+            <option value="레전+">레전+</option>
+            <option value="오리진">오리진</option>
+        </select>
+    </div>
+
+    <div id="skillList"></div>
+
+    <script src="skills.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
