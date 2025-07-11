@@ -1,0 +1,120 @@
+﻿/* feedback.css */
+.feedback-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+#feedback-form {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 30px;
+}
+
+    #feedback-form textarea {
+        min-height: 100px;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        font-size: 16px;
+        margin-bottom: 10px;
+        box-sizing: border-box;
+        width: 100%;
+    }
+
+    #feedback-form button {
+        align-self: flex-end; /* 버튼을 오른쪽 끝으로 */
+        padding: 10px 20px;
+        border: none;
+        background-color: #4a4e69;
+        color: white;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 16px;
+    }
+
+.comment-card {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 15px;
+}
+
+.comment-header {
+    display: flex;
+    justify-content: flex-start; /* 요소들을 왼쪽부터 정렬 */
+    align-items: center;
+    color: #888;
+    font-size: 14px;
+    margin-bottom: 15px;
+    gap: 15px; /* 날짜와 작성자 사이 간격 */
+}
+
+.comment-author {
+    font-weight: bold;
+    color: #555;
+}
+
+.comment-actions {
+    margin-left: auto; /* 삭제 버튼을 가장 오른쪽으로 밀어냄 */
+}
+
+.delete-button {
+    background: none;
+    border: 1px solid #d9534f;
+    color: #d9534f;
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+    .delete-button:hover {
+        background-color: #d9534f;
+        color: white;
+    }
+
+.comment-body {
+    font-size: 16px;
+    line-height: 1.6;
+    word-break: break-all; /* 긴 내용이 카드를 뚫고 나가지 않도록 설정 */
+}
+
+.admin-link {
+    display: block;
+    text-align: right;
+    font-size: 14px;
+    color: #888;
+    margin-top: 20px;
+    text-decoration: none;
+}
+
+    .admin-link:hover {
+        text-decoration: underline;
+    }
+
+/* 돌아가기 버튼을 담는 컨테이너 */
+.nav-container {
+    max-width: 800px;
+    margin: 0 auto 20px; /* 제목 아래, 다른 내용과 위에 간격 추가 */
+    padding: 0 20px;
+}
+
+/* 돌아가기 버튼 스타일 */
+.back-button {
+    display: inline-block;
+    padding: 8px 15px;
+    background-color: #f0f0f0;
+    color: #333;
+    text-decoration: none;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+    font-size: 14px;
+    transition: background-color 0.2s;
+}
+
+    .back-button:hover {
+        background-color: #e0e0e0;
+    }

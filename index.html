@@ -21,7 +21,18 @@
 
     <div id="skillList"></div>
 
+    <footer>
+        <a href="feedback.html" class="feedback-button">오류 및 건의사항</a>
+        <a href="settings.html" class="feedback-button" id="admin-settings-button" style="display: none;">익명화 설정</a>
+    </footer>
+
     <script src="skills.js"></script>
     <script src="script.js"></script>
+    <script>
+        // 페이지 로드 시 관리자 로그인 상태 확인
+        if (sessionStorage.getItem('eversoul-admin-token') === 'true') {
+            document.getElementById('admin-settings-button').style.display = 'inline-block';
+        }
+    </script>
 </body>
 </html>

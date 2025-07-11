@@ -10,8 +10,6 @@ function renderSkills() {
 
     const filteredSpirits = spiritsData.filter(spirit => {
         const spiritName = spirit.character.toLowerCase();
-
-        // --- 검색 로직 수정: .join() 대신 .some()을 사용하여 각 별명을 개별적으로 확인 ---
         const matchesNickname = (spirit.nickname || []).some(nick => nick.toLowerCase().includes(searchTerm));
         const matchesCharacter = spiritName.includes(searchTerm) || matchesNickname;
 
@@ -34,12 +32,9 @@ function renderSkills() {
 
     filteredSpirits.forEach(spirit => {
         let skillsToRender;
-
         const spiritName = spirit.character.toLowerCase();
         const matchesNickname = (spirit.nickname || []).some(nick => nick.toLowerCase().includes(searchTerm));
 
-        // --- 렌더링 로직 수정: 태그 검색과 이름/별명 검색을 명확히 구분 ---
-        // 검색어가 이름이나 별명과 일치하지 않을 때만 태그로 스킬을 필터링
         if (searchTerm.trim() !== '' && !spiritName.includes(searchTerm) && !matchesNickname) {
             skillsToRender = spirit.skills.filter(skill => {
                 let relevantTags = [];
@@ -53,7 +48,6 @@ function renderSkills() {
                 return relevantTags.join(' ').toLowerCase().includes(searchTerm);
             });
         } else {
-            // 검색어가 없거나, 이름 또는 별명과 일치하면 모든 스킬 표시
             skillsToRender = spirit.skills;
         }
 
@@ -83,7 +77,10 @@ function renderSkills() {
                 }
                 if (tags.length > 0) {
                     tagsHtml = '<div class="tags-container">';
-                    tags.forEach(tag => { tagsHtml += `<span class="tag">${tag}</span>`; });
+                    tags.forEach(tag => {
+                        const tagDesc = (window.tagDescriptions && window.tagDescriptions[tag]) || '';
+                        tagsHtml += `<span class="tag" title="${tagDesc}">${tag}</span>`;
+                    });
                     tagsHtml += '</div>';
                 }
                 skillsHtml += `
@@ -117,10 +114,13 @@ function handleRarityChange(event) {
     const descriptionElement = skillCard.querySelector('.skill-description');
     const tagsContainer = skillCard.querySelector('.tags-container');
     descriptionElement.textContent = newLevelData.description;
+
     let newTagsHtml = '';
     if (newLevelData.tags && newLevelData.tags.length > 0) {
+        const tagDescriptions = window.tagDescriptions || {};
         newLevelData.tags.forEach(tag => {
-            newTagsHtml += `<span class="tag">${tag}</span>`;
+            const tagDesc = tagDescriptions[tag] || '';
+            newTagsHtml += `<span class="tag" title="${tagDesc}">${tag}</span>`;
         });
     }
     if (tagsContainer) tagsContainer.innerHTML = newTagsHtml;
