@@ -1,4 +1,4 @@
-// feedback.js
+﻿// feedback.js
 
 // --- 1. 설정 및 변수 선언 ---
 const firebaseConfig = {
@@ -15,7 +15,8 @@ firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 const auth = firebase.auth();
 
-const ADMIN_EMAIL = "your-admin-email@gmail.com"; 
+// ✅ 여기에 관리자 비밀번호를 설정하세요. (외부에 노출됩니다!)
+const ADMIN_PASSWORD = "flynn";
 
 const form = document.getElementById('feedback-form');
 const feedbackText = document.getElementById('feedback-text');
@@ -74,9 +75,64 @@ function submitFeedback() {
     });
 }
 
-function googleLogin() { /* ...기존과 동일... */ }
-function googleLogout() { /* ...기존과 동일... */ }
-function loadComments(user) { /* ...기존과 동일... */ }
+function adminLogin() {
+    const input = prompt("관리자 비밀번호를 입력하세요:");
+
+    // 사용자가 입력을 취소한 경우
+    if (input === null) {
+        return;
+    }
+
+    if (input === ADMIN_PASSWORD) {
+        // 비밀번호가 맞으면 세션 스토리지에 관리자 상태를 저장
+        sessionStorage.setItem('eversoul-admin-token', 'true');
+        alert("관리자 모드로 로그인되었습니다.");
+        location.reload(); // 페이지를 새로고침하여 UI 변경
+    } else {
+        alert("비밀번호가 일치하지 않습니다.");
+    }
+}
+
+/**
+ * 관리자 로그아웃을 처리하는 새로운 함수
+ */
+function adminLogout() {
+    // 세션 스토리지에서 관리자 상태를 제거
+    sessionStorage.removeItem('eversoul-admin-token');
+    alert("로그아웃되었습니다.");
+    location.reload(); // 페이지를 새로고침하여 UI 변경
+}
+
+/**
+ * 댓글 목록을 불러오는 함수 (isAdmin 인자 추가)
+ */
+function loadComments(isAdmin) {
+    commentList.innerHTML = '';
+    db.collection("feedback").orderBy("timestamp", "desc").onSnapshot((snapshot) => {
+        commentList.innerHTML = '';
+        snapshot.forEach((doc) => {
+            const comment = doc.data();
+            const date = new Date(comment.timestamp.seconds * 1000).toLocaleString();
+
+            let deleteButtonHtml = '';
+            // isAdmin이 true일 때만 삭제 버튼을 표시
+            if (isAdmin) {
+                deleteButtonHtml = `<button class="delete-button" data-id="${doc.id}">삭제</button>`;
+            }
+
+            const card = `
+                <div class="comment-card">
+                    <div class="comment-header">
+                        <span class="comment-author">${comment.author}</span>
+                        <span class="comment-date">${date}</span>
+                        <div class="comment-actions">${deleteButtonHtml}</div>
+                    </div>
+                    <div class="comment-body">${comment.text.replace(/\n/g, '<br>')}</div>
+                </div>`;
+            commentList.innerHTML += card;
+        });
+    });
+}
 
 
 // --- 3. 이벤트 처리 ---
@@ -97,9 +153,10 @@ feedbackText.addEventListener('keydown', (e) => {
     // 2. Shift + Enter를 누르면 원래대로 줄바꿈 (아무 코드도 실행하지 않음)
 });
 
-// 댓글 삭제 이벤트 (기존과 동일)
+// 댓글 삭제 이벤트
 commentList.addEventListener('click', (e) => {
-    if (e.target.classList.contains('delete-button')) {
+    const isAdmin = sessionStorage.getItem('eversoul-admin-token') === 'true';
+    if (isAdmin && e.target.classList.contains('delete-button')) {
         const docId = e.target.dataset.id;
         if (confirm("정말로 이 댓글을 삭제하시겠습니까?")) {
             db.collection("feedback").doc(docId).delete();
@@ -107,16 +164,18 @@ commentList.addEventListener('click', (e) => {
     }
 });
 
-// 로그인/로그아웃 링크 클릭 (기존과 동일)
-adminLoginLink.addEventListener('click', googleLogin);
-adminLogoutLink.addEventListener('click', googleLogout);
+// 로그인/로그아웃 링크에 새로운 함수 연결
+adminLoginLink.addEventListener('click', adminLogin);
+adminLogoutLink.addEventListener('click', adminLogout);
 
 
 // --- 4. 초기 실행 로직 (기존과 동일) ---
-auth.onAuthStateChanged(user => {
-    if (user) {
-        const isAdmin = user.email === ADMIN_EMAIL;
-        userInfo.textContent = isAdmin ? `관리자: ${user.displayName}` : `${user.displayName} (권한 없음)`;
+// 페이지가 로드될 때 세션 스토리지를 확인하여 UI를 설정
+document.addEventListener('DOMContentLoaded', () => {
+    const isAdmin = sessionStorage.getItem('eversoul-admin-token') === 'true';
+
+    if (isAdmin) {
+        userInfo.textContent = '관리자 모드';
         adminLoginLink.style.display = 'none';
         adminLogoutLink.style.display = 'inline-block';
     } else {
@@ -124,5 +183,6 @@ auth.onAuthStateChanged(user => {
         adminLoginLink.style.display = 'inline-block';
         adminLogoutLink.style.display = 'none';
     }
-    loadComments(user);
+    // 관리자 여부에 따라 댓글 로드
+    loadComments(isAdmin);
 });
