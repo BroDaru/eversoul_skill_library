@@ -1,4 +1,15 @@
 ﻿// script.js
+const firebaseConfig = {
+    apiKey: "YOUR_API_KEY",
+    authDomain: "YOUR_AUTH_DOMAIN",
+    projectId: "YOUR_PROJECT_ID",
+    storageBucket: "YOUR_STORAGE_BUCKET",
+    messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+    appId: "YOUR_APP_ID"
+};
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth(); // Auth 초기화 추가
+
 const searchInput = document.getElementById('searchInput');
 const rarityFilter = document.getElementById('rarityFilter');
 const skillList = document.getElementById('skillList');
@@ -27,28 +38,33 @@ function renderSkills() {
 
         const matchesGlobalRarity = !selectedRarityGlobal || spirit.skills.some(s => s.skillType === '유물' && s.levels[selectedRarityGlobal]);
 
+        if (searchTerm.trim() === '') {
+            return matchesGlobalRarity;
+        }
+
         return (matchesCharacter || hasMatchingSkillTag) && matchesGlobalRarity;
     });
 
     filteredSpirits.forEach(spirit => {
-        let skillsToRender;
-        const spiritName = spirit.character.toLowerCase();
-        const matchesNickname = (spirit.nickname || []).some(nick => nick.toLowerCase().includes(searchTerm));
+        let skillsToRender = spirit.skills;
 
-        if (searchTerm.trim() !== '' && !spiritName.includes(searchTerm) && !matchesNickname) {
-            skillsToRender = spirit.skills.filter(skill => {
-                let relevantTags = [];
-                if (skill.skillType === '유물' && skill.levels) {
-                    if (skill.levels[selectedRarityGlobal] && skill.levels[selectedRarityGlobal].tags) {
-                        relevantTags = skill.levels[selectedRarityGlobal].tags;
+        if (searchTerm.trim() !== '') {
+            const spiritName = spirit.character.toLowerCase();
+            const matchesNickname = (spirit.nickname || []).some(nick => nick.toLowerCase().includes(searchTerm));
+
+            if (!spiritName.includes(searchTerm) && !matchesNickname) {
+                skillsToRender = spirit.skills.filter(skill => {
+                    let relevantTags = [];
+                    if (skill.skillType === '유물' && skill.levels) {
+                        if (skill.levels[selectedRarityGlobal] && skill.levels[selectedRarityGlobal].tags) {
+                            relevantTags = skill.levels[selectedRarityGlobal].tags;
+                        }
+                    } else if (skill.tags) {
+                        relevantTags = skill.tags;
                     }
-                } else if (skill.tags) {
-                    relevantTags = skill.tags;
-                }
-                return relevantTags.join(' ').toLowerCase().includes(searchTerm);
-            });
-        } else {
-            skillsToRender = spirit.skills;
+                    return relevantTags.join(' ').toLowerCase().includes(searchTerm);
+                });
+            }
         }
 
         if (skillsToRender.length > 0) {
@@ -77,8 +93,9 @@ function renderSkills() {
                 }
                 if (tags.length > 0) {
                     tagsHtml = '<div class="tags-container">';
+                    const tagDescriptions = window.tagDescriptions || {};
                     tags.forEach(tag => {
-                        const tagDesc = (window.tagDescriptions && window.tagDescriptions[tag]) || '';
+                        const tagDesc = tagDescriptions[tag] || '';
                         tagsHtml += `<span class="tag" title="${tagDesc}">${tag}</span>`;
                     });
                     tagsHtml += '</div>';

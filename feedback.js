@@ -1,28 +1,32 @@
 ﻿// feedback.js
+
 // --- 1. 설정 및 변수 선언 ---
 const firebaseConfig = {
-    apiKey: "YOUR_API_KEY",
-    authDomain: "YOUR_AUTH_DOMAIN",
-    projectId: "YOUR_PROJECT_ID",
-    storageBucket: "YOUR_STORAGE_BUCKET",
-    messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-    appId: "YOUR_APP_ID"
+    apiKey: "AIzaSyA5pM7A922WJZgY_9huOg6YB3iUolojlyg",
+    authDomain: "eversoul-skill-library.firebaseapp.com",
+    projectId: "eversoul-skill-library",
+    storageBucket: "eversoul-skill-library.appspot.com",
+    messagingSenderId: "997429178700",
+    appId: "1:997429178700:web:c36121136fc56b32fadfe9",
+    measurementId: "G-WD9GT5Q9YR"
 };
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
+const auth = firebase.auth();
 
-// 이 비밀번호를 자신만 아는 값으로 변경하세요.
-const ADMIN_PASSWORD = "flynn784";
+// ADMIN_EMAIL 변수는 이제 필요 없으므로 삭제했습니다.
 
 const form = document.getElementById('feedback-form');
 const feedbackText = document.getElementById('feedback-text');
 const commentList = document.getElementById('comment-list');
 const adminLoginLink = document.getElementById('admin-login-link');
-
+const adminLogoutLink = document.getElementById('admin-logout-link');
+const userInfo = document.getElementById('user-info');
 
 // --- 2. 핵심 함수들 ---
 
 function generateAnonymousId() {
+    // ... (이 함수는 기존과 동일)
     const prefixWords = (localStorage.getItem('prefixWords') || '익명의').split('\n').filter(Boolean);
     const suffixWords = (localStorage.getItem('suffixWords') || '구원자').split('\n').filter(Boolean);
     const auxWords = (localStorage.getItem('auxWords') || '').split('\n').filter(Boolean);
@@ -37,11 +41,16 @@ function generateAnonymousId() {
     return `${fullName}#${randomNumber}`;
 }
 
-function isAdmin() {
-    return sessionStorage.getItem('eversoul-admin-token') === 'true';
+function googleLogin() {
+    const provider = new firebase.auth.GoogleAuthProvider();
+    auth.signInWithPopup(provider).catch(error => console.error("로그인 오류:", error));
 }
 
-function loadComments() {
+function googleLogout() {
+    auth.signOut();
+}
+
+function loadComments(user) {
     db.collection("feedback").orderBy("timestamp", "desc").onSnapshot((snapshot) => {
         commentList.innerHTML = '';
         snapshot.forEach((doc) => {
@@ -49,7 +58,9 @@ function loadComments() {
             const docId = doc.id;
             const date = comment.timestamp ? comment.timestamp.toDate().toLocaleString() : '방금 전';
 
-            const adminActions = isAdmin()
+            // 이제 user 객체의 존재 여부로만 삭제 버튼을 표시합니다.
+            // 실제 삭제 권한은 서버의 보안 규칙이 결정합니다.
+            const adminActions = user
                 ? `<div class="comment-actions"><button class="delete-button" data-id="${docId}">삭제</button></div>`
                 : '';
 
@@ -69,10 +80,8 @@ function loadComments() {
     });
 }
 
-
 // --- 3. 이벤트 처리 ---
 
-// 댓글 등록 이벤트
 form.addEventListener('submit', (e) => {
     e.preventDefault();
     const text = feedbackText.value;
@@ -81,35 +90,34 @@ form.addEventListener('submit', (e) => {
         author: generateAnonymousId(),
         text: text,
         timestamp: firebase.firestore.FieldValue.serverTimestamp()
-    }).then(() => {
-        form.reset();
-    });
+    }).then(() => { form.reset(); });
 });
 
-// 댓글 삭제 이벤트
 commentList.addEventListener('click', (e) => {
     if (e.target.classList.contains('delete-button')) {
         const docId = e.target.dataset.id;
-        if (confirm("정말로 이 댓글을 삭제하시겠습니까?")) {
-            db.collection("feedback").doc(docId).delete();
-        }
+        // 로그인한 사용자라면 누구나 삭제를 '시도'할 수 있습니다.
+        // 하지만 서버의 보안 규칙이 관리자가 아니면 요청을 거부합니다.
+        db.collection("feedback").doc(docId).delete().catch(error => {
+            alert("삭제 권한이 없습니다.");
+            console.error("삭제 오류:", error);
+        });
     }
 });
 
-// 관리자 로그인 링크 클릭 이벤트
-adminLoginLink.addEventListener('click', (e) => {
-    e.preventDefault();
-    const password = prompt("관리자 비밀번호를 입력하세요:");
-    if (password === ADMIN_PASSWORD) {
-        sessionStorage.setItem('eversoul-admin-token', 'true');
-        alert('관리자 모드로 로그인했습니다.');
-        loadComments(); // 댓글 목록을 다시 그려서 삭제 버튼 표시
-    } else if (password !== null) { // 사용자가 취소를 누르지 않았을 때만
-        alert('비밀번호가 올바르지 않습니다.');
+adminLoginLink.addEventListener('click', googleLogin);
+adminLogoutLink.addEventListener('click', googleLogout);
+
+// --- 4. 초기 실행 로직: 사용자의 로그인 상태 변화 감지 ---
+auth.onAuthStateChanged(user => {
+    if (user) {
+        userInfo.textContent = `로그인 계정: ${user.displayName}`;
+        adminLoginLink.style.display = 'none';
+        adminLogoutLink.style.display = 'inline-block';
+    } else {
+        userInfo.textContent = '';
+        adminLoginLink.style.display = 'inline-block';
+        adminLogoutLink.style.display = 'none';
     }
+    loadComments(user);
 });
-
-
-// --- 4. 초기 실행 로직 ---
-// 페이지가 열리면 바로 댓글 목록을 불러옵니다.
-loadComments();

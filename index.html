@@ -10,7 +10,7 @@
     <h1>⚔️ 에버소울 스킬 도서관</h1>
 
     <div class="search-filter-box">
-        <input type="text" id="searchInput" placeholder="태그 또는 스킬 이름으로 검색...">
+        <input type="text" id="searchInput" placeholder="정령/별명/태그 검색...">
         <label for="rarityFilter">유물등급:</label>
         <select id="rarityFilter">
             <option value="에픽">에픽</option>
@@ -26,10 +26,16 @@
         <a href="settings.html" class="feedback-button" id="admin-settings-button" style="display: none;">익명화 설정</a>
     </footer>
 
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+
     <script src="skills.js"></script>
     <script src="script.js"></script>
+
     <script>
         // 페이지 로드 시 관리자 로그인 상태 확인
+        // sessionStorage에서 토큰을 확인하여 버튼을 표시합니다.
         if (sessionStorage.getItem('eversoul-admin-token') === 'true') {
             document.getElementById('admin-settings-button').style.display = 'inline-block';
         }
