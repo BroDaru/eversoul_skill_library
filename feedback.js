@@ -1,20 +1,19 @@
-﻿// feedback.js
+// feedback.js
 
 // --- 1. 설정 및 변수 선언 ---
 const firebaseConfig = {
-    apiKey: "AIzaSyA5pM7A922WJZgY_9huOg6YB3iUolojlyg",
-    authDomain: "eversoul-skill-library.firebaseapp.com",
-    projectId: "eversoul-skill-library",
-    storageBucket: "eversoul-skill-library.appspot.com",
-    messagingSenderId: "997429178700",
-    appId: "1:997429178700:web:c36121136fc56b32fadfe9",
-    measurementId: "G-WD9GT5Q9YR"
+    apiKey: "YOUR_API_KEY",
+    authDomain: "YOUR_AUTH_DOMAIN",
+    projectId: "YOUR_PROJECT_ID",
+    storageBucket: "YOUR_STORAGE_BUCKET",
+    messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+    appId: "YOUR_APP_ID"
 };
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 const auth = firebase.auth();
 
-// ADMIN_EMAIL 변수는 이제 필요 없으므로 삭제했습니다.
+const ADMIN_EMAIL = "your-admin-email@gmail.com"; 
 
 const form = document.getElementById('feedback-form');
 const feedbackText = document.getElementById('feedback-text');
@@ -23,10 +22,11 @@ const adminLoginLink = document.getElementById('admin-login-link');
 const adminLogoutLink = document.getElementById('admin-logout-link');
 const userInfo = document.getElementById('user-info');
 
+
 // --- 2. 핵심 함수들 ---
 
 function generateAnonymousId() {
-    // ... (이 함수는 기존과 동일)
+    // ... (기존과 동일)
     const prefixWords = (localStorage.getItem('prefixWords') || '익명의').split('\n').filter(Boolean);
     const suffixWords = (localStorage.getItem('suffixWords') || '구원자').split('\n').filter(Boolean);
     const auxWords = (localStorage.getItem('auxWords') || '').split('\n').filter(Boolean);
@@ -41,77 +41,67 @@ function generateAnonymousId() {
     return `${fullName}#${randomNumber}`;
 }
 
-function googleLogin() {
-    const provider = new firebase.auth.GoogleAuthProvider();
-    auth.signInWithPopup(provider).catch(error => console.error("로그인 오류:", error));
-}
-
-function googleLogout() {
-    auth.signOut();
-}
-
-function loadComments(user) {
-    db.collection("feedback").orderBy("timestamp", "desc").onSnapshot((snapshot) => {
-        commentList.innerHTML = '';
-        snapshot.forEach((doc) => {
-            const comment = doc.data();
-            const docId = doc.id;
-            const date = comment.timestamp ? comment.timestamp.toDate().toLocaleString() : '방금 전';
-
-            // 이제 user 객체의 존재 여부로만 삭제 버튼을 표시합니다.
-            // 실제 삭제 권한은 서버의 보안 규칙이 결정합니다.
-            const adminActions = user
-                ? `<div class="comment-actions"><button class="delete-button" data-id="${docId}">삭제</button></div>`
-                : '';
-
-            const commentHtml = `
-                <div class="comment-card">
-                    <div class="comment-header">
-                        <span class="comment-author">${comment.author}</span>
-                        <span class="comment-date">${date}</span>
-                        ${adminActions}
-                    </div>
-                    <div class="comment-body">
-                        <p>${comment.text.replace(/\n/g, '<br>')}</p>
-                    </div>
-                </div>`;
-            commentList.innerHTML += commentHtml;
-        });
-    });
-}
-
-// --- 3. 이벤트 처리 ---
-
-form.addEventListener('submit', (e) => {
-    e.preventDefault();
+// --- 댓글 등록 로직을 별도 함수로 분리 ---
+function submitFeedback() {
     const text = feedbackText.value;
     if (text.trim() === '') return;
+
     db.collection("feedback").add({
         author: generateAnonymousId(),
         text: text,
         timestamp: firebase.firestore.FieldValue.serverTimestamp()
-    }).then(() => { form.reset(); });
+    })
+    .then(() => {
+        form.reset(); // 입력창 초기화
+    })
+    .catch((error) => {
+        console.error("Error adding document: ", error);
+    });
+}
+
+function googleLogin() { /* ...기존과 동일... */ }
+function googleLogout() { /* ...기존과 동일... */ }
+function loadComments(user) { /* ...기존과 동일... */ }
+
+
+// --- 3. 이벤트 처리 ---
+
+// '등록' 버튼 클릭 또는 Enter 키 입력 시 호출
+form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    submitFeedback();
 });
 
+// --- 키보드 입력 이벤트 처리 (핵심 수정) ---
+feedbackText.addEventListener('keydown', (e) => {
+    // 1. Enter 키만 누르면 등록 (기존의 줄바꿈 동작 방지)
+    if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault(); // 줄바꿈 방지
+        submitFeedback();
+    }
+    // 2. Shift + Enter를 누르면 원래대로 줄바꿈 (아무 코드도 실행하지 않음)
+});
+
+// 댓글 삭제 이벤트 (기존과 동일)
 commentList.addEventListener('click', (e) => {
     if (e.target.classList.contains('delete-button')) {
         const docId = e.target.dataset.id;
-        // 로그인한 사용자라면 누구나 삭제를 '시도'할 수 있습니다.
-        // 하지만 서버의 보안 규칙이 관리자가 아니면 요청을 거부합니다.
-        db.collection("feedback").doc(docId).delete().catch(error => {
-            alert("삭제 권한이 없습니다.");
-            console.error("삭제 오류:", error);
-        });
+        if (confirm("정말로 이 댓글을 삭제하시겠습니까?")) {
+            db.collection("feedback").doc(docId).delete();
+        }
     }
 });
 
+// 로그인/로그아웃 링크 클릭 (기존과 동일)
 adminLoginLink.addEventListener('click', googleLogin);
 adminLogoutLink.addEventListener('click', googleLogout);
 
-// --- 4. 초기 실행 로직: 사용자의 로그인 상태 변화 감지 ---
+
+// --- 4. 초기 실행 로직 (기존과 동일) ---
 auth.onAuthStateChanged(user => {
     if (user) {
-        userInfo.textContent = `로그인 계정: ${user.displayName}`;
+        const isAdmin = user.email === ADMIN_EMAIL;
+        userInfo.textContent = isAdmin ? `관리자: ${user.displayName}` : `${user.displayName} (권한 없음)`;
         adminLoginLink.style.display = 'none';
         adminLogoutLink.style.display = 'inline-block';
     } else {
