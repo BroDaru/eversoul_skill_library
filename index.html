@@ -10,6 +10,12 @@
     <h1>⚔️ 에버소울 스킬 도서관</h1>
 
     <div class="search-filter-box">
+        <label for="pageSizeFilter">표시 개수:</label>
+        <select id="pageSizeFilter">
+            <option value="10" selected>10개</option>
+            <option value="20">20개</option>
+            <option value="30">30개</option>
+        </select>
         <input type="text" id="searchInput" placeholder="정령/별명/태그 검색...">
 
         <label for="rarityFilter">유물등급:</label>
@@ -19,12 +25,7 @@
             <option value="오리진">오리진</option>
         </select>
 
-        <label for="pageSizeFilter">표시 개수:</label>
-        <select id="pageSizeFilter">
-            <option value="10" selected>10개</option>
-            <option value="20">20개</option>
-            <option value="30">30개</option>
-        </select>
+        
     </div>
 
     <div id="skillList"></div>
