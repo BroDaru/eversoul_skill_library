@@ -2,12 +2,13 @@
 
 // --- 1. 설정 및 변수 선언 ---
 const firebaseConfig = {
-    apiKey: "YOUR_API_KEY",
-    authDomain: "YOUR_AUTH_DOMAIN",
-    projectId: "YOUR_PROJECT_ID",
-    storageBucket: "YOUR_STORAGE_BUCKET",
-    messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-    appId: "YOUR_APP_ID"
+  apiKey: "AIzaSyA5pM7A922WJZgY_9huOg6YB3iUolojlyg",
+  authDomain: "eversoul-skill-library.firebaseapp.com",
+  projectId: "eversoul-skill-library",
+  storageBucket: "eversoul-skill-library.firebasestorage.app",
+  messagingSenderId: "997429178700",
+  appId: "1:997429178700:web:c36121136fc56b32fadfe9",
+  measurementId: "G-WD9GT5Q9YR"
 };
 firebase.initializeApp(firebaseConfig);
 
