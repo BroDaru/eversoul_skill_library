@@ -1,4 +1,4 @@
-﻿/* style.css */
+/* style.css */
 body {
     font-family: sans-serif;
     background-color: #f4f4f9;
@@ -134,6 +134,32 @@ select#rarityFilter {
     font-size: 12px;
     margin-right: 5px;
     margin-bottom: 5px;
+}
+
+#pagination-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    margin-top: 30px;
+}
+
+    #pagination-controls button {
+        padding: 8px 16px;
+        border: 1px solid #ccc;
+        background-color: #fff;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+        #pagination-controls button:disabled {
+            cursor: not-allowed;
+            opacity: 0.5;
+        }
+
+#page-indicator {
+    font-size: 16px;
+    font-weight: bold;
 }
 
 /* 화면이 좁아질 때 (모바일) 스킬 카드를 2열로 변경 */
