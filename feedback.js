@@ -2,13 +2,15 @@
 
 // --- 1. 설정 및 변수 선언 ---
 const firebaseConfig = {
-    apiKey: "YOUR_API_KEY",
-    authDomain: "YOUR_AUTH_DOMAIN",
-    projectId: "YOUR_PROJECT_ID",
-    storageBucket: "YOUR_STORAGE_BUCKET",
-    messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-    appId: "YOUR_APP_ID"
+  apiKey: "AIzaSyA5pM7A922WJZgY_9huOg6YB3iUolojlyg",
+  authDomain: "eversoul-skill-library.firebaseapp.com",
+  projectId: "eversoul-skill-library",
+  storageBucket: "eversoul-skill-library.firebasestorage.app",
+  messagingSenderId: "997429178700",
+  appId: "1:997429178700:web:c36121136fc56b32fadfe9",
+  measurementId: "G-WD9GT5Q9YR"
 };
+
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 const auth = firebase.auth();
@@ -26,19 +28,32 @@ const userInfo = document.getElementById('user-info');
 // --- 2. 핵심 함수들 ---
 
 function generateAnonymousId() {
-    // ... (기존과 동일)
+    // 1. localStorage에서 모든 단어 목록을 불러와 하나로 합칩니다.
     const prefixWords = (localStorage.getItem('prefixWords') || '익명의').split('\n').filter(Boolean);
     const suffixWords = (localStorage.getItem('suffixWords') || '구원자').split('\n').filter(Boolean);
     const auxWords = (localStorage.getItem('auxWords') || '').split('\n').filter(Boolean);
-    const prefix = prefixWords[Math.floor(Math.random() * prefixWords.length)];
-    const suffix = suffixWords[Math.floor(Math.random() * suffixWords.length)];
-    let fullName = `${prefix} ${suffix}`;
-    if (auxWords.length > 0 && Math.random() < 0.5) {
-        const aux = auxWords[Math.floor(Math.random() * auxWords.length)];
-        fullName = `${prefix} ${aux} ${suffix}`;
+    const allWords = [...prefixWords, ...suffixWords, ...auxWords];
+
+    // 2. 단어가 하나도 없을 경우를 대비한 기본값 설정
+    if (allWords.length === 0) {
+        allWords.push('익명의', '구원자');
     }
+
+    // 3. 전체 단어 목록을 무작위로 섞습니다 (피셔-예이츠 셔플 알고리즘).
+    for (let i = allWords.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [allWords[i], allWords[j]] = [allWords[j], allWords[i]]; // 배열 요소 교환
+    }
+
+    // 4. 이름에 사용할 단어 개수를 랜덤으로 정합니다 (예: 2개 또는 3개).
+    const wordCount = Math.floor(Math.random() * 2) + 2;
+
+    // 5. 섞인 단어 목록에서 정해진 개수만큼 단어를 뽑아 조합합니다.
+    // 만약 전체 단어 수가 뽑을 개수보다 적으면, 있는 단어만 사용합니다.
+    const randomName = allWords.slice(0, Math.min(wordCount, allWords.length)).join(' ');
+    
     const randomNumber = String(Math.floor(Math.random() * 10000)).padStart(4, '0');
-    return `${fullName}#${randomNumber}`;
+    return `${randomName}#${randomNumber}`;
 }
 
 // --- 댓글 등록 로직을 별도 함수로 분리 ---
