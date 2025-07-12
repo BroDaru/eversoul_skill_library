@@ -1,7 +1,7 @@
-// script.js
+﻿// script.js
 
-// --- 1. 변수 선언 ---
-// Firebase Auth 초기화 (이전에 추가한 코드를 그대로 사용)
+// --- 1. 설정 및 변수 선언 ---
+// Firebase 초기화 코드 추가 (YOUR_... 부분은 본인의 정보로 채워야 합니다)
 const firebaseConfig = {
     apiKey: "YOUR_API_KEY",
     authDomain: "YOUR_AUTH_DOMAIN",
@@ -11,18 +11,15 @@ const firebaseConfig = {
     appId: "YOUR_APP_ID"
 };
 firebase.initializeApp(firebaseConfig);
-const auth = firebase.auth();
 
 const searchInput = document.getElementById('searchInput');
 const rarityFilter = document.getElementById('rarityFilter');
 const skillList = document.getElementById('skillList');
-
 const pageSizeFilter = document.getElementById('pageSizeFilter');
 const prevPageButton = document.getElementById('prev-page');
 const nextPageButton = document.getElementById('next-page');
 const pageIndicator = document.getElementById('page-indicator');
 
-// 페이지 상태 관리 변수
 let currentPage = 1;
 let pageSize = parseInt(pageSizeFilter.value, 10);
 
@@ -35,7 +32,6 @@ function renderSkills() {
     skillList.innerHTML = '';
 
     const filteredSpirits = spiritsData.filter(spirit => {
-        // ... (필터링 로직은 기존과 동일)
         const spiritName = spirit.character.toLowerCase();
         const matchesNickname = (spirit.nickname || []).some(nick => nick.toLowerCase().includes(searchTerm));
         const matchesCharacter = spiritName.includes(searchTerm) || matchesNickname;
@@ -50,7 +46,7 @@ function renderSkills() {
             return relevantTags.join(' ').toLowerCase().includes(searchTerm);
         });
         const matchesGlobalRarity = !selectedRarityGlobal || spirit.skills.some(s => s.skillType === '유물' && s.levels[selectedRarityGlobal]);
-        if(searchTerm.trim() === '') return matchesGlobalRarity;
+        if (searchTerm.trim() === '') return matchesGlobalRarity;
         return (matchesCharacter || hasMatchingSkillTag) && matchesGlobalRarity;
     });
 
@@ -60,7 +56,6 @@ function renderSkills() {
     const spiritsToShow = filteredSpirits.slice(startIndex, endIndex);
 
     spiritsToShow.forEach(spirit => {
-        // ... (이 부분의 렌더링 로직은 기존과 완전히 동일합니다) ...
         let skillsToRender = spirit.skills;
         if (searchTerm.trim() !== '' && !spirit.character.toLowerCase().includes(searchTerm) && !(spirit.nickname || []).join(' ').toLowerCase().includes(searchTerm)) {
             skillsToRender = spirit.skills.filter(skill => {
@@ -97,10 +92,8 @@ function renderSkills() {
                 }
                 if (tags.length > 0) {
                     tagsHtml = '<div class="tags-container">';
-                    // tagDescriptions는 skills.js에 있다고 가정
-                    const tagDescriptions = window.tagDescriptions || {};
                     tags.forEach(tag => {
-                        const tagDesc = tagDescriptions[tag] || '';
+                        const tagDesc = (window.tagDescriptions && window.tagDescriptions[tag]) || '';
                         tagsHtml += `<span class="tag" title="${tagDesc}">${tag}</span>`;
                     });
                     tagsHtml += '</div>';
@@ -118,27 +111,22 @@ function renderSkills() {
 function updatePaginationUI(totalPages) {
     pageIndicator.textContent = `페이지 ${currentPage} / ${totalPages > 0 ? totalPages : 1}`;
     prevPageButton.disabled = currentPage === 1;
-    nextPageButton.disabled = currentPage === totalPages || totalPages === 0;
+    nextPageButton.disabled = currentPage >= totalPages;
 }
 
-// --- 이 함수가 빠져있었습니다 ---
 function handleRarityChange(event) {
     if (!event.target.matches('.artifact-rarity-select')) return;
     const dropdown = event.target;
     const selectedRarity = dropdown.value;
     const characterName = dropdown.dataset.character;
     const skillName = dropdown.dataset.skillName;
-    
     const spirit = spiritsData.find(s => s.character === characterName);
     const skillData = spirit.skills.find(s => s.skillName === skillName);
     const newLevelData = skillData.levels[selectedRarity];
-
     const skillCard = dropdown.closest('.skill-card');
     const descriptionElement = skillCard.querySelector('.skill-description');
     const tagsContainer = skillCard.querySelector('.tags-container');
-
     descriptionElement.textContent = newLevelData.description;
-
     let newTagsHtml = '';
     if (newLevelData.tags && newLevelData.tags.length > 0) {
         const tagDescriptions = window.tagDescriptions || {};
@@ -149,7 +137,6 @@ function handleRarityChange(event) {
     }
     if (tagsContainer) tagsContainer.innerHTML = newTagsHtml;
 }
-
 
 // --- 3. 이벤트 처리 ---
 searchInput.addEventListener('input', () => {
@@ -176,12 +163,9 @@ prevPageButton.addEventListener('click', () => {
 });
 
 nextPageButton.addEventListener('click', () => {
-    const totalFiltered = spiritsData.filter(/*... complex filter logic copy ...*/).length;
-    const totalPages = Math.ceil(totalFiltered / pageSize);
-    if (currentPage < totalPages) {
-        currentPage++;
-        renderSkills();
-    }
+    // --- 페이지네이션 다음 버튼 로직 수정 ---
+    currentPage++;
+    renderSkills();
 });
 
 skillList.addEventListener('change', handleRarityChange);
