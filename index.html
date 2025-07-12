@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html>
 <head>
     <meta charset="UTF-8">
@@ -11,15 +11,29 @@
 
     <div class="search-filter-box">
         <input type="text" id="searchInput" placeholder="정령/별명/태그 검색...">
+
         <label for="rarityFilter">유물등급:</label>
         <select id="rarityFilter">
             <option value="에픽">에픽</option>
             <option value="레전+">레전+</option>
             <option value="오리진">오리진</option>
         </select>
+
+        <label for="pageSizeFilter">표시 개수:</label>
+        <select id="pageSizeFilter">
+            <option value="10" selected>10개</option>
+            <option value="20">20개</option>
+            <option value="30">30개</option>
+        </select>
     </div>
 
     <div id="skillList"></div>
+
+    <div id="pagination-controls">
+        <button id="prev-page">이전</button>
+        <span id="page-indicator"></span>
+        <button id="next-page">다음</button>
+    </div>
 
     <footer>
         <a href="feedback.html" class="feedback-button">오류 및 건의사항</a>
