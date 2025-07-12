@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html>
 <head>
     <meta charset="UTF-8">
@@ -8,32 +8,33 @@
     <link rel="stylesheet" href="feedback.css">
 </head>
 <body>
-        <h1>📝 오류 및 건의사항</h1>
+    <h1>📝 오류 및 건의사항</h1>
 
-        <div class="nav-container">
-            <a href="index.html" class="back-button">← 스킬 도서관으로 돌아가기</a>
+    <div class="nav-container">
+        <a href="index.html" class="back-button">← 스킬 도서관으로 돌아가기</a>
+    </div>
+    <div class="feedback-container">
+        <form id="feedback-form">
+            <textarea id="feedback-text" placeholder="내용을 입력하세요..." required></textarea>
+            <button type="submit">등록</button>
+        </form>
+
+        <div id="comment-list">
         </div>
-        <div class="feedback-container">
-            <form id="feedback-form">
-                <textarea id="feedback-text" placeholder="내용을 입력하세요..." required></textarea>
-                <button type="submit">등록</button>
-            </form>
+    </div>
 
-            <div id="comment-list">
-            </div>
+    <footer>
+        <div id="auth-container">
+            <span id="user-info"></span>
+            <a href="#" id="admin-login-link" class="admin-link">관리자 로그인</a>
+            <a href="#" id="admin-logout-link" class="admin-link" style="display: none;">로그아웃</a>
         </div>
+    </footer>
 
-        <footer>
-            <div id="auth-container">
-                <span id="user-info"></span>
-                <a href="#" id="admin-login-link" class="admin-link">관리자 로그인</a>
-                <a href="#" id="admin-logout-link" class="admin-link" style="display: none;">로그아웃</a>
-            </div>
-        </footer>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
 
-        <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-        <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
-
-        <script src="feedback.js"></script>
-    </body>
+    <script src="feedback.js"></script>
+</body>
 </html>
