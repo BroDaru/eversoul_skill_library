@@ -28,8 +28,8 @@
             },
             {
                 "skillName": "",
-                "skillType": "패시브",
-                "description": "패시브스킬설명",
+                "skillType": "패시브or서브3",
+                "description": "패시브or서브3스킬설명",
                 "tags": ["태그1", "태그2"]
             },
             {
@@ -38,15 +38,15 @@
                 "defaultRarity": "에픽",
                 "levels": {
                     "에픽": {
-                        "description": "유물스킬 에픽 설명",
+                        "description": "유물스킬 1레벨 설명",
                         "tags": ["태그1", "태그2"]
                     },
                     "레전+": {
-                        "description": "유물스킬 레전+ 설명",
+                        "description": "유물스킬 4레벨 최종 발동효과 설명",
                         "tags": ["태그1", "태그2"]
                     },
                     "오리진": {
-                        "description": "유물스킬 오리진 설명",
+                        "description": "유물스킬 7레벨 최종 발동효과 설명",
                         "tags": ["태그1", "태그2"]
                     }
                 }
