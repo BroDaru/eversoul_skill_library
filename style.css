@@ -1,4 +1,4 @@
-/* style.css */
+﻿/* style.css */
 body {
     font-family: sans-serif;
     background-color: #f4f4f9;
@@ -175,6 +175,56 @@ select#rarityFilter {
         grid-template-columns: 1fr;
     }
 }
+
+.tag-section-wrapper {
+    display: flex;
+    max-width: 900px;
+    margin: 0 auto 20px auto;
+    align-items: flex-start;
+    gap: 10px;
+}
+
+#tagContainer {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    overflow: hidden;
+    flex-grow: 1;
+    transition: max-height 0.3s ease-in-out;
+}
+
+    #tagContainer.collapsed {
+        max-height: 38px; /* Approximate height for one row */
+    }
+
+.tag-button {
+    padding: 8px 12px;
+    border: 1px solid #ccc;
+    background-color: #f8f8f8;
+    border-radius: 15px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.2s;
+    white-space: nowrap;
+}
+
+    .tag-button:hover {
+        background-color: #e0e0e0;
+    }
+
+#toggleTagsButton {
+    padding: 8px 12px;
+    font-size: 18px;
+    font-weight: bold;
+    border: 1px solid #ccc;
+    background-color: #f8f8f8;
+    border-radius: 5px;
+    cursor: pointer;
+    flex-shrink: 0;
+    line-height: 1.2;
+    align-self: flex-start;
+}
+
 
 footer {
     text-align: center;

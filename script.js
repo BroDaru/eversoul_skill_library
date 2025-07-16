@@ -2,13 +2,13 @@
 
 // --- 1. 설정 및 변수 선언 ---
 const firebaseConfig = {
-  apiKey: "AIzaSyA5pM7A922WJZgY_9huOg6YB3iUolojlyg",
-  authDomain: "eversoul-skill-library.firebaseapp.com",
-  projectId: "eversoul-skill-library",
-  storageBucket: "eversoul-skill-library.firebasestorage.app",
-  messagingSenderId: "997429178700",
-  appId: "1:997429178700:web:c36121136fc56b32fadfe9",
-  measurementId: "G-WD9GT5Q9YR"
+    apiKey: "AIzaSyA5pM7A922WJZgY_9huOg6YB3iUolojlyg",
+    authDomain: "eversoul-skill-library.firebaseapp.com",
+    projectId: "eversoul-skill-library",
+    storageBucket: "eversoul-skill-library.firebasestorage.app",
+    messagingSenderId: "997429178700",
+    appId: "1:997429178700:web:c36121136fc56b32fadfe9",
+    measurementId: "G-WD9GT5Q9YR"
 };
 firebase.initializeApp(firebaseConfig);
 
@@ -19,12 +19,32 @@ const pageSizeFilter = document.getElementById('pageSizeFilter');
 const prevPageButton = document.getElementById('prev-page');
 const nextPageButton = document.getElementById('next-page');
 const pageIndicator = document.getElementById('page-indicator');
+const tagContainer = document.getElementById('tagContainer');
+const toggleTagsButton = document.getElementById('toggleTagsButton');
+
 
 let currentPage = 1;
 let pageSize = parseInt(pageSizeFilter.value, 10);
 let totalFilteredSpirits = []; // 필터링된 전체 목록을 저장할 변수
 
 // --- 2. 핵심 함수들 ---
+
+function populateTags() {
+    const sortedTags = Object.keys(tagDescriptions).sort();
+
+    sortedTags.forEach(tag => {
+        const button = document.createElement('button');
+        button.className = 'tag-button';
+        button.textContent = tag;
+        button.title = tagDescriptions[tag]; // Add description as a tooltip
+        button.addEventListener('click', () => {
+            searchInput.value = tag;
+            currentPage = 1; // Reset to the first page for the new search
+            renderSkills();
+        });
+        tagContainer.appendChild(button);
+    });
+}
 
 function renderSkills() {
     const searchTerm = searchInput.value.toLowerCase();
@@ -177,4 +197,15 @@ nextPageButton.addEventListener('click', () => {
 
 skillList.addEventListener('change', handleRarityChange);
 
-window.onload = renderSkills;
+toggleTagsButton.addEventListener('click', () => {
+    tagContainer.classList.toggle('collapsed');
+    // Change button text for better user experience
+    toggleTagsButton.textContent = tagContainer.classList.contains('collapsed') ? '三' : '✕';
+});
+
+
+// --- 4. 초기 실행 로직 ---
+window.addEventListener('load', () => {
+    populateTags();
+    renderSkills();
+});
